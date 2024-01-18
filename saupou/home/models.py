@@ -54,6 +54,7 @@ class Tag(TaggitTag):
 
 
 class PostPageBlogCategory(models.Model):
+    # acts as link table -->page related to which blog category
     page = ParentalKey(
         "blog.PostPage", on_delete=models.CASCADE, related_name="categories"
     )
