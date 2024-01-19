@@ -8,9 +8,19 @@ from wagtail.snippets.models import register_snippet
 from modelcluster.fields import ParentalKey
 from taggit.models import TaggedItemBase
 from modelcluster.tags import ClusterTaggableManager
+from wagtail.fields import StreamField
+from wagtail import blocks
+class BlogPage(Page):
+    pass
+
 class HomePage(Page):
     body = RichTextField(blank=True)
-
+    contents= StreamField([
+        ('heading', blocks.CharBlock(classname="full title")),
+        ('paragraph', blocks.RichTextBlock()),
+        ('image', blocks.PageChooserBlock()),
+    ], null=True, blank=True,use_json_field=True)
+    
     header_image = models.ForeignKey(
         "wagtailimages.Image",
         null=True,
@@ -19,12 +29,13 @@ class HomePage(Page):
         related_name="+",
     )
     
-    tags = ClusterTaggableManager(through="blog.PostPageTag", blank=True)
+    tags = ClusterTaggableManager(through="home.HomePageTag", blank=True)
     content_panels = Page.content_panels + [
         FieldPanel('body'),
         FieldPanel('header_image'),
         InlinePanel("categories", label="category"),
         FieldPanel("tags"),
+        FieldPanel('contents'),
         
     ]
     
@@ -53,13 +64,13 @@ class Tag(TaggitTag):
 
 
 
-class PostPageBlogCategory(models.Model):
+class HomePageBlogCategory(models.Model):
     # acts as link table -->page related to which blog category
     page = ParentalKey(
-        "blog.PostPage", on_delete=models.CASCADE, related_name="categories"
+        "home.HomePage", on_delete=models.CASCADE, related_name="categories"
     )
     blog_category = models.ForeignKey(
-        "blog.BlogCategory", on_delete=models.CASCADE, related_name="post_pages"
+        "home.BlogCategory", on_delete=models.CASCADE, related_name="post_pages"
     )
 
     panels = [
@@ -69,5 +80,5 @@ class PostPageBlogCategory(models.Model):
     class Meta:
         unique_together = ("page", "blog_category")
 
-class PostPageTag(TaggedItemBase):
-    content_object = ParentalKey("blog.PostPage", related_name="post_tags")
+class HomePageTag(TaggedItemBase):
+    content_object = ParentalKey("home.HomePage", related_name="post_tags")
