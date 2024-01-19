@@ -10,6 +10,9 @@ from taggit.models import TaggedItemBase
 from modelcluster.tags import ClusterTaggableManager
 from wagtail.fields import StreamField
 from wagtail import blocks
+
+from wagtail.images.blocks import ImageChooserBlock
+
 class BlogPage(Page):
     pass
 
@@ -18,7 +21,8 @@ class HomePage(Page):
     contents= StreamField([
         ('heading', blocks.CharBlock(classname="full title")),
         ('paragraph', blocks.RichTextBlock()),
-        ('image', blocks.PageChooserBlock()),
+        ('page', blocks.PageChooserBlock()),
+        ('image', ImageChooserBlock()),
     ], null=True, blank=True,use_json_field=True)
     
     header_image = models.ForeignKey(
